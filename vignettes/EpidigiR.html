@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Esther Atsabina Wanjala" />
+
+<meta name="date" content="2025-08-11" />
+
+<title>Introduction to EpidigiR</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to EpidigiR</h1>
+<h4 class="author">Esther Atsabina Wanjala</h4>
+<h4 class="date">2025-08-11</h4>
+
+
+
+<div id="title-introduction-to-epidigir-epidemiological-analysis-and-visualization-output-rmarkdownhtml_vignette-vignette-vignetteindexentryintroduction-to-epidigir-vignetteengineknitrrmarkdown-vignetteencodingutf-8" class="section level2">
+<h2>title: “Introduction to EpidigiR: Epidemiological Analysis and
+Visualization” output: rmarkdown::html_vignette vignette: &gt;
+%\VignetteIndexEntry{Introduction to EpidigiR}
+%\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}</h2>
+</div>
+<div id="introduction-to-epidigir" class="section level1">
+<h1>Introduction to EpidigiR</h1>
+<p>EpidigiR is an R package for epidemiological analysis, modeling, and
+visualization, designed with minimal dependencies and comprehensive
+functionality. It provides three main functions to cover 12
+epidemiological topics:</p>
+<ul>
+<li><strong>epi_analyze</strong>: Performs summary statistics, SIR
+modeling, DALY calculations, age standardization, diagnostic test
+evaluation, and NLP keyword extraction.</li>
+<li><strong>epi_model</strong>: Handles clinical trial power
+calculation, survival analysis, SNP association, logistic regression,
+k-means clustering, Random Forest, and SVM.</li>
+<li><strong>epi_visualize</strong>: Creates visualizations for
+prevalence mapping, epidemic curves, scatter plots, and boxplots.</li>
+</ul>
+<p>The package includes nine datasets to support these analyses:
+epi_prevalence, sir_data, geno_data, ml_data, nlp_data, clinical_data,
+daly_data, survey_data, diagnostic_data, and survival_data.</p>
+<p>This vignette demonstrates how to use these functions and datasets
+for various epidemiological tasks.</p>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+</div>
+<div id="datasets" class="section level2">
+<h2>Datasets</h2>
+<p>The package includes the following datasets:</p>
+<ul>
+<li><strong>epi_prevalence</strong>: Disease prevalence by region and
+age group, with spatial coordinates (12 rows).</li>
+<li><strong>sir_data</strong>: Simulated SIR model output (50
+rows).</li>
+<li><strong>geno_data</strong>: Genotype and case-control data for SNP
+analysis (100 rows).</li>
+<li><strong>ml_data</strong>: Patient data for machine learning
+(logistic regression, clustering, Random Forest, SVM; 100 rows).</li>
+<li><strong>nlp_data</strong>: Epidemiological text data for NLP (100
+rows).</li>
+<li><strong>clinical_data</strong>: Clinical trial data for power
+calculations and outcome analysis (200 rows).</li>
+<li><strong>daly_data</strong>: Data for DALY calculations (20
+rows).</li>
+<li><strong>survey_data</strong>: Data for age standardization (20
+rows).</li>
+<li><strong>diagnostic_data</strong>: Data for diagnostic test
+evaluation (10 rows).</li>
+<li><strong>survival_data</strong>: Data for survival analysis (100
+rows).</li>
+</ul>
+</div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<div id="summary-statistics" class="section level3">
+<h3>1. Summary Statistics</h3>
+<p>Calculate incidence and prevalence using epi_prevalence.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">data</span>(epi_prevalence)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">epi_analyze</span>(epi_prevalence, <span class="at">outcome =</span> <span class="st">&quot;cases&quot;</span>, <span class="at">group =</span> <span class="st">&quot;region&quot;</span>, <span class="at">type =</span> <span class="st">&quot;summary&quot;</span>)</span></code></pre></div>
+<pre><code>##   Group.1 x.mean_outcome x.incidence_rate x.prevalence
+## 1    East    140.0000000        4.6666667    0.4666667
+## 2   North    133.3333333        4.4444444    0.4666667
+## 3   South    120.0000000        4.0000000    0.4666667
+## 4    West    100.0000000        3.3333333    0.4666667</code></pre>
+</div>
+<div id="sir-epidemic-model" class="section level3">
+<h3>2. SIR Epidemic Model</h3>
+<p>Simulate an SIR model and visualize the epidemic curve.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>sir_result <span class="ot">&lt;-</span> <span class="fu">epi_analyze</span>(<span class="at">data =</span> <span class="cn">NULL</span>, <span class="at">outcome =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;sir&quot;</span>, <span class="at">N =</span> <span class="dv">1000</span>, <span class="at">beta =</span> <span class="fl">0.3</span>, <span class="at">gamma =</span> <span class="fl">0.1</span>, <span class="at">days =</span> <span class="dv">50</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>    <span class="fu">epi_visualize</span>(sir_result, <span class="at">x =</span> <span class="st">&quot;time&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Infected&quot;</span>, <span class="at">type =</span> <span class="st">&quot;curve&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Epidemic Curve&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="map-disease-prevalence" class="section level3">
+<h3>3. Map Disease Prevalence</h3>
+<p>Visualize prevalence by region using epi_prevalence.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">data</span>(epi_prevalence)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">coordinates</span>(epi_prevalence) <span class="ot">&lt;-</span> <span class="er">~</span>lon<span class="sc">+</span>lat</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">epi_visualize</span>(epi_prevalence, <span class="at">x =</span> <span class="st">&quot;prevalence&quot;</span>, <span class="at">type =</span> <span class="st">&quot;map&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Prevalence Map&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="clinical-trials-power-calculation" class="section level3">
+<h3>4. Clinical Trials (Power Calculation)</h3>
+<p>Logistic Regression with Clinical Data.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">data</span>(clinical_data)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    clinical_data<span class="sc">$</span>outcome <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(clinical_data<span class="sc">$</span>outcome)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    model <span class="ot">&lt;-</span> <span class="fu">epi_model</span>(clinical_data, <span class="at">formula =</span> outcome <span class="sc">~</span> age <span class="sc">+</span> health_score <span class="sc">+</span> dose, <span class="at">type =</span> <span class="st">&quot;logistic&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="fu">head</span>(model<span class="sc">$</span>predictions)</span></code></pre></div>
+<pre><code>##   lambda.min
+## 1       0.41
+## 2       0.41
+## 3       0.41
+## 4       0.41
+## 5       0.41
+## 6       0.41</code></pre>
+</div>
+</div>
+<div id="random-forest-with-clinical-data" class="section level2">
+<h2>Random Forest with Clinical Data</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>rf_model <span class="ot">&lt;-</span> <span class="fu">epi_model</span>(clinical_data, <span class="at">formula =</span> outcome <span class="sc">~</span> age <span class="sc">+</span> health_score <span class="sc">+</span> dose, <span class="at">type =</span> <span class="st">&quot;rf&quot;</span>)</span></code></pre></div>
+<pre><code>## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>    <span class="fu">head</span>(rf_model<span class="sc">$</span>predictions)</span></code></pre></div>
+<pre><code>## NULL</code></pre>
+<div id="clinical-trials-outcome-analysis" class="section level3">
+<h3>5. Clinical Trials (Outcome Analysis)</h3>
+<p>Analyze treatment outcomes using logistic regression.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">data</span>(clinical_data)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">epi_model</span>(clinical_data, <span class="at">formula =</span> outcome <span class="sc">~</span> age <span class="sc">+</span> health_score <span class="sc">+</span> dose, <span class="at">type =</span> <span class="st">&quot;logistic&quot;</span>)</span></code></pre></div>
+<pre><code>## $coefficients
+## 4 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##              lambda.min
+## (Intercept)  -0.3639654
+## age           .        
+## health_score  .        
+## dose          .        
+## 
+## $predictions
+##     lambda.min
+## 1         0.41
+## 2         0.41
+## 3         0.41
+## 4         0.41
+## 5         0.41
+## 6         0.41
+## 7         0.41
+## 8         0.41
+## 9         0.41
+## 10        0.41
+## 11        0.41
+## 12        0.41
+## 13        0.41
+## 14        0.41
+## 15        0.41
+## 16        0.41
+## 17        0.41
+## 18        0.41
+## 19        0.41
+## 20        0.41
+## 21        0.41
+## 22        0.41
+## 23        0.41
+## 24        0.41
+## 25        0.41
+## 26        0.41
+## 27        0.41
+## 28        0.41
+## 29        0.41
+## 30        0.41
+## 31        0.41
+## 32        0.41
+## 33        0.41
+## 34        0.41
+## 35        0.41
+## 36        0.41
+## 37        0.41
+## 38        0.41
+## 39        0.41
+## 40        0.41
+## 41        0.41
+## 42        0.41
+## 43        0.41
+## 44        0.41
+## 45        0.41
+## 46        0.41
+## 47        0.41
+## 48        0.41
+## 49        0.41
+## 50        0.41
+## 51        0.41
+## 52        0.41
+## 53        0.41
+## 54        0.41
+## 55        0.41
+## 56        0.41
+## 57        0.41
+## 58        0.41
+## 59        0.41
+## 60        0.41
+## 61        0.41
+## 62        0.41
+## 63        0.41
+## 64        0.41
+## 65        0.41
+## 66        0.41
+## 67        0.41
+## 68        0.41
+## 69        0.41
+## 70        0.41
+## 71        0.41
+## 72        0.41
+## 73        0.41
+## 74        0.41
+## 75        0.41
+## 76        0.41
+## 77        0.41
+## 78        0.41
+## 79        0.41
+## 80        0.41
+## 81        0.41
+## 82        0.41
+## 83        0.41
+## 84        0.41
+## 85        0.41
+## 86        0.41
+## 87        0.41
+## 88        0.41
+## 89        0.41
+## 90        0.41
+## 91        0.41
+## 92        0.41
+## 93        0.41
+## 94        0.41
+## 95        0.41
+## 96        0.41
+## 97        0.41
+## 98        0.41
+## 99        0.41
+## 100       0.41
+## 101       0.41
+## 102       0.41
+## 103       0.41
+## 104       0.41
+## 105       0.41
+## 106       0.41
+## 107       0.41
+## 108       0.41
+## 109       0.41
+## 110       0.41
+## 111       0.41
+## 112       0.41
+## 113       0.41
+## 114       0.41
+## 115       0.41
+## 116       0.41
+## 117       0.41
+## 118       0.41
+## 119       0.41
+## 120       0.41
+## 121       0.41
+## 122       0.41
+## 123       0.41
+## 124       0.41
+## 125       0.41
+## 126       0.41
+## 127       0.41
+## 128       0.41
+## 129       0.41
+## 130       0.41
+## 131       0.41
+## 132       0.41
+## 133       0.41
+## 134       0.41
+## 135       0.41
+## 136       0.41
+## 137       0.41
+## 138       0.41
+## 139       0.41
+## 140       0.41
+## 141       0.41
+## 142       0.41
+## 143       0.41
+## 144       0.41
+## 145       0.41
+## 146       0.41
+## 147       0.41
+## 148       0.41
+## 149       0.41
+## 150       0.41
+## 151       0.41
+## 152       0.41
+## 153       0.41
+## 154       0.41
+## 155       0.41
+## 156       0.41
+## 157       0.41
+## 158       0.41
+## 159       0.41
+## 160       0.41
+## 161       0.41
+## 162       0.41
+## 163       0.41
+## 164       0.41
+## 165       0.41
+## 166       0.41
+## 167       0.41
+## 168       0.41
+## 169       0.41
+## 170       0.41
+## 171       0.41
+## 172       0.41
+## 173       0.41
+## 174       0.41
+## 175       0.41
+## 176       0.41
+## 177       0.41
+## 178       0.41
+## 179       0.41
+## 180       0.41
+## 181       0.41
+## 182       0.41
+## 183       0.41
+## 184       0.41
+## 185       0.41
+## 186       0.41
+## 187       0.41
+## 188       0.41
+## 189       0.41
+## 190       0.41
+## 191       0.41
+## 192       0.41
+## 193       0.41
+## 194       0.41
+## 195       0.41
+## 196       0.41
+## 197       0.41
+## 198       0.41
+## 199       0.41
+## 200       0.41</code></pre>
+</div>
+<div id="global-health-burden-daly" class="section level3">
+<h3>6. Global Health Burden (DALY)</h3>
+<p>Calculate DALYs using daly_data.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">data</span>(daly_data)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">epi_analyze</span>(daly_data, <span class="at">outcome =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;daly&quot;</span>)</span></code></pre></div>
+<pre><code>##       group      daly
+## 1   group_1  809.1125
+## 2   group_2 1171.2362
+## 3   group_3  806.3073
+## 4   group_4 1392.1371
+## 5   group_5 1291.4882
+## 6   group_6  509.8396
+## 7   group_7  870.1247
+## 8   group_8 1220.5410
+## 9   group_9  776.4134
+## 10 group_10  627.1544
+## 11 group_11 1444.5109
+## 12 group_12  964.0353
+## 13 group_13 1070.6309
+## 14 group_14 1023.3304
+## 15 group_15  253.7084
+## 16 group_16 1174.8507
+## 17 group_17  712.7858
+## 18 group_18  285.2372
+## 19 group_19  588.3101
+## 20 group_20 1113.2849</code></pre>
+</div>
+<div id="genomic-and-data-integration-snp-association" class="section level3">
+<h3>7. Genomic and Data Integration (SNP Association)</h3>
+<p>Perform SNP association analysis using geno_data.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">data</span>(geno_data)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">epi_model</span>(geno_data, <span class="at">type =</span> <span class="st">&quot;snp&quot;</span>)</span></code></pre></div>
+<pre><code>##           statistic   p_value
+## X-squared  1.769353 0.4128477</code></pre>
+</div>
+<div id="survey-and-demographics-age-standardization" class="section level3">
+<h3>8. Survey and Demographics (Age Standardization)</h3>
+<p>Perform age standardization using survey_data.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">data</span>(survey_data)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">epi_analyze</span>(survey_data, <span class="at">outcome =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;age_standardize&quot;</span>)</span></code></pre></div>
+<pre><code>##   standardized_rate
+## 1          33.45531</code></pre>
+</div>
+<div id="survey-and-demographics-logistic-regression" class="section level3">
+<h3>9. Survey and Demographics (Logistic Regression)</h3>
+<p>Predict disease risk using ml_data.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">data</span>(ml_data)</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="fu">epi_model</span>(ml_data, <span class="at">formula =</span> outcome <span class="sc">~</span> age <span class="sc">+</span> exposure <span class="sc">+</span> genetic_risk, <span class="at">type =</span> <span class="st">&quot;logistic&quot;</span>)</span></code></pre></div>
+<pre><code>## $coefficients
+## 4 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##               lambda.min
+## (Intercept)  -0.07023647
+## age           .         
+## exposure     -0.24665358
+## genetic_risk -0.44226048
+## 
+## $predictions
+##     lambda.min
+## 1    0.3831721
+## 2    0.4226812
+## 3    0.3628269
+## 4    0.3728871
+## 5    0.3897852
+## 6    0.3775312
+## 7    0.4429211
+## 8    0.4638221
+## 9    0.4225214
+## 10   0.4181372
+## 11   0.4106127
+## 12   0.4162627
+## 13   0.3919717
+## 14   0.4351101
+## 15   0.4405576
+## 16   0.3547656
+## 17   0.3713028
+## 18   0.4313731
+## 19   0.3942980
+## 20   0.3371898
+## 21   0.3734349
+## 22   0.3921797
+## 23   0.4219115
+## 24   0.3656600
+## 25   0.4677498
+## 26   0.4544676
+## 27   0.3474888
+## 28   0.4442703
+## 29   0.4032065
+## 30   0.3316372
+## 31   0.3785438
+## 32   0.4249414
+## 33   0.3704606
+## 34   0.3885219
+## 35   0.4320315
+## 36   0.4046714
+## 37   0.3947398
+## 38   0.3637493
+## 39   0.4030607
+## 40   0.3316197
+## 41   0.4040702
+## 42   0.4288836
+## 43   0.4145399
+## 44   0.4192330
+## 45   0.4104075
+## 46   0.3982693
+## 47   0.3535357
+## 48   0.3819995
+## 49   0.3988559
+## 50   0.3716511
+## 51   0.4516351
+## 52   0.3652116
+## 53   0.3907147
+## 54   0.4481023
+## 55   0.3831334
+## 56   0.3318167
+## 57   0.3995212
+## 58   0.4121092
+## 59   0.4183489
+## 60   0.3421431
+## 61   0.4104343
+## 62   0.4078032
+## 63   0.3468036
+## 64   0.3915342
+## 65   0.4113729
+## 66   0.3637452
+## 67   0.4406024
+## 68   0.4591506
+## 69   0.4365927
+## 70   0.3994054
+## 71   0.3842263
+## 72   0.4443808
+## 73   0.3843273
+## 74   0.4226227
+## 75   0.3784093
+## 76   0.3367431
+## 77   0.3424209
+## 78   0.4310248
+## 79   0.4439496
+## 80   0.3407719
+## 81   0.3737823
+## 82   0.3916132
+## 83   0.4175376
+## 84   0.3855838
+## 85   0.4201091
+## 86   0.3607504
+## 87   0.4580487
+## 88   0.4376349
+## 89   0.4686141
+## 90   0.4185681
+## 91   0.3598978
+## 92   0.4437090
+## 93   0.3991410
+## 94   0.3464051
+## 95   0.4248496
+## 96   0.4067014
+## 97   0.3936163
+## 98   0.4649367
+## 99   0.4633623
+## 100  0.3305594</code></pre>
+</div>
+<div id="survival-analysis" class="section level3">
+<h3>10. Survival Analysis</h3>
+<p>Perform survival analysis using survival_data.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">data</span>(survival_data)</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">epi_model</span>(survival_data, <span class="at">type =</span> <span class="st">&quot;survival&quot;</span>)</span></code></pre></div>
+<pre><code>## $survfit
+## Call: survfit(formula = surv_obj ~ 1)
+## 
+##        n events median 0.95LCL 0.95UCL
+## [1,] 100     71     11    9.24    14.4
+## 
+## $summary
+## Call: survfit(formula = surv_obj ~ 1)
+## 
+##    time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##   0.046    100       1   0.9900 0.00995      0.97069        1.000
+##   0.292     99       1   0.9800 0.01400      0.95294        1.000
+##   0.316     98       1   0.9700 0.01706      0.93714        1.000
+##   0.318     97       1   0.9600 0.01960      0.92235        0.999
+##   0.421     96       1   0.9500 0.02179      0.90823        0.994
+##   0.562     94       1   0.9399 0.02379      0.89440        0.988
+##   0.674     93       1   0.9298 0.02559      0.88096        0.981
+##   0.986     90       1   0.9195 0.02731      0.86745        0.975
+##   1.453     89       1   0.9091 0.02889      0.85422        0.968
+##   1.883     88       1   0.8988 0.03036      0.84122        0.960
+##   2.161     87       1   0.8885 0.03172      0.82842        0.953
+##   2.596     84       1   0.8779 0.03306      0.81543        0.945
+##   2.804     82       1   0.8672 0.03434      0.80242        0.937
+##   2.810     81       1   0.8565 0.03555      0.78956        0.929
+##   2.847     80       1   0.8458 0.03668      0.77685        0.921
+##   3.000     78       1   0.8349 0.03778      0.76407        0.912
+##   3.062     77       1   0.8241 0.03881      0.75142        0.904
+##   3.135     76       1   0.8132 0.03979      0.73888        0.895
+##   3.165     74       1   0.8022 0.04074      0.72625        0.886
+##   3.197     73       1   0.7913 0.04164      0.71372        0.877
+##   3.771     72       1   0.7803 0.04249      0.70129        0.868
+##   3.800     71       1   0.7693 0.04328      0.68895        0.859
+##   4.204     70       1   0.7583 0.04404      0.67671        0.850
+##   4.802     67       1   0.7470 0.04481      0.66411        0.840
+##   4.807     66       1   0.7357 0.04554      0.65160        0.831
+##   5.066     65       1   0.7243 0.04622      0.63917        0.821
+##   5.646     64       1   0.7130 0.04687      0.62683        0.811
+##   5.726     63       1   0.7017 0.04747      0.61457        0.801
+##   5.887     60       1   0.6900 0.04810      0.60189        0.791
+##   5.909     59       1   0.6783 0.04868      0.58930        0.781
+##   6.293     57       1   0.6664 0.04926      0.57653        0.770
+##   6.436     56       1   0.6545 0.04980      0.56383        0.760
+##   6.855     55       1   0.6426 0.05030      0.55122        0.749
+##   7.907     54       1   0.6307 0.05075      0.53868        0.738
+##   8.457     51       1   0.6183 0.05124      0.52564        0.727
+##   8.498     50       1   0.6060 0.05169      0.51268        0.716
+##   9.240     49       1   0.5936 0.05209      0.49981        0.705
+##   9.659     48       1   0.5812 0.05245      0.48701        0.694
+##   9.724     47       1   0.5689 0.05278      0.47430        0.682
+##   9.746     46       1   0.5565 0.05306      0.46166        0.671
+##  10.244     44       1   0.5439 0.05334      0.44875        0.659
+##  10.279     43       1   0.5312 0.05358      0.43593        0.647
+##  10.477     42       1   0.5186 0.05377      0.42319        0.635
+##  10.672     41       1   0.5059 0.05393      0.41053        0.623
+##  11.003     40       1   0.4933 0.05404      0.39795        0.611
+##  11.149     38       1   0.4803 0.05416      0.38505        0.599
+##  11.293     37       1   0.4673 0.05423      0.37225        0.587
+##  11.685     36       1   0.4543 0.05425      0.35952        0.574
+##  11.920     35       1   0.4413 0.05423      0.34688        0.562
+##  12.290     34       1   0.4284 0.05417      0.33433        0.549
+##  12.546     32       1   0.4150 0.05410      0.32140        0.536
+##  13.291     30       1   0.4011 0.05404      0.30806        0.522
+##  13.480     29       1   0.3873 0.05392      0.29483        0.509
+##  14.395     27       1   0.3730 0.05380      0.28112        0.495
+##  14.967     24       1   0.3574 0.05375      0.26618        0.480
+##  15.631     21       1   0.3404 0.05382      0.24970        0.464
+##  15.705     19       1   0.3225 0.05389      0.23243        0.447
+##  15.707     18       1   0.3046 0.05379      0.21546        0.431
+##  16.059     17       1   0.2867 0.05353      0.19881        0.413
+##  16.199     16       1   0.2687 0.05309      0.18246        0.396
+##  16.424     15       1   0.2508 0.05249      0.16643        0.378
+##  17.312     14       1   0.2329 0.05171      0.15074        0.360
+##  18.569     13       1   0.2150 0.05074      0.13538        0.341
+##  18.878     11       1   0.1954 0.04975      0.11868        0.322
+##  21.678     10       1   0.1759 0.04846      0.10251        0.302
+##  22.483      9       1   0.1564 0.04685      0.08691        0.281
+##  25.361      8       1   0.1368 0.04489      0.07192        0.260
+##  27.253      5       1   0.1095 0.04346      0.05026        0.238
+##  40.410      3       1   0.0730 0.04155      0.02390        0.223
+##  44.987      2       1   0.0365 0.03312      0.00616        0.216
+##  72.110      1       1   0.0000     NaN           NA           NA</code></pre>
+</div>
+<div id="nlp-tools" class="section level3">
+<h3>11. NLP Tools</h3>
+<p>Extract keywords from epidemiological texts using nlp_data.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">data</span>(nlp_data)</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>    nlp_result <span class="ot">&lt;-</span> <span class="fu">epi_analyze</span>(nlp_data, <span class="at">outcome =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;nlp&quot;</span>)</span></code></pre></div>
+<pre><code>## Warning in tm_map.SimpleCorpus(corpus, tm::content_transformer(tolower)):
+## transformation drops documents</code></pre>
+<pre><code>## Warning in tm_map.SimpleCorpus(corpus, tm::removePunctuation): transformation
+## drops documents</code></pre>
+<pre><code>## Warning in tm_map.SimpleCorpus(corpus, tm::removeNumbers): transformation drops
+## documents</code></pre>
+<pre><code>## Warning in tm_map.SimpleCorpus(corpus, tm::removeWords,
+## tm::stopwords(&quot;english&quot;)): transformation drops documents</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>    nlp_result<span class="sc">$</span>keywords</span></code></pre></div>
+<pre><code>## NULL</code></pre>
+</div>
+<div id="machine-learning-and-ai-k-means-clustering" class="section level3">
+<h3>12. Machine Learning and AI (K-means Clustering)</h3>
+<p>Cluster patients using ml_data.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">data</span>(ml_data)</span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="fu">epi_model</span>(ml_data[, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;exposure&quot;</span>, <span class="st">&quot;genetic_risk&quot;</span>)], <span class="at">type =</span> <span class="st">&quot;kmeans&quot;</span>, <span class="at">k =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## $clusters
+##   [1] 2 1 2 3 2 3 3 2 2 1 3 1 1 3 3 1 2 3 2 2 2 1 1 1 1 3 1 1 1 2 2 3 2 3 2 2 3
+##  [38] 3 3 2 1 2 1 1 3 1 1 1 1 3 3 2 1 1 1 1 2 1 2 1 2 1 2 1 1 2 3 1 2 1 2 1 3 3
+##  [75] 2 2 1 2 3 2 3 1 2 1 2 2 1 2 3 3 1 1 3 2 3 2 2 2 1 2
+## 
+## $centers
+##        age  exposure genetic_risk
+## 1 32.96901 0.5113783    0.4571639
+## 2 52.35977 0.5265754    0.5814614
+## 3 71.92241 0.3875801    0.4133177</code></pre>
+</div>
+<div id="machine-learning-and-ai-random-forest" class="section level3">
+<h3>13. Machine Learning and AI (Random Forest)</h3>
+<p>Train a Random Forest model using ml_data.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">data</span>(ml_data)</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="fu">epi_model</span>(ml_data, <span class="at">formula =</span> outcome <span class="sc">~</span> age <span class="sc">+</span> exposure <span class="sc">+</span> genetic_risk, <span class="at">type =</span> <span class="st">&quot;rf&quot;</span>)</span></code></pre></div>
+<pre><code>## note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .</code></pre>
+<pre><code>## $model
+## Random Forest 
+## 
+## 100 samples
+##   3 predictor
+##   2 classes: &#39;0&#39;, &#39;1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 80, 80, 80, 80, 80 
+## Resampling results across tuning parameters:
+## 
+##   mtry  Accuracy  Kappa     
+##   2     0.57      0.07717391
+##   3     0.56      0.06903330
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was mtry = 2.
+## 
+## $performance
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  0  1
+##          0 60  0
+##          1  0 40
+##                                      
+##                Accuracy : 1          
+##                  95% CI : (0.9638, 1)
+##     No Information Rate : 0.6        
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16  
+##                                      
+##                   Kappa : 1          
+##                                      
+##  Mcnemar&#39;s Test P-Value : NA         
+##                                      
+##             Sensitivity : 1.0        
+##             Specificity : 1.0        
+##          Pos Pred Value : 1.0        
+##          Neg Pred Value : 1.0        
+##              Prevalence : 0.6        
+##          Detection Rate : 0.6        
+##    Detection Prevalence : 0.6        
+##       Balanced Accuracy : 1.0        
+##                                      
+##        &#39;Positive&#39; Class : 0          
+## </code></pre>
+</div>
+<div id="machine-learning-and-ai-svm" class="section level3">
+<h3>14. Machine Learning and AI (SVM)</h3>
+<p>Train an SVM model using ml_data.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="fu">data</span>(ml_data)</span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>    ml_data<span class="sc">$</span>outcome <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(ml_data<span class="sc">$</span>outcome)</span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>    svm_model <span class="ot">&lt;-</span> <span class="fu">epi_model</span>(ml_data, <span class="at">formula =</span> outcome <span class="sc">~</span> age <span class="sc">+</span> exposure <span class="sc">+</span> genetic_risk, <span class="at">type =</span> <span class="st">&quot;svmRadial&quot;</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a>    svm_model<span class="sc">$</span>performance</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction  0  1
+##          0 60 40
+##          1  0  0
+##                                           
+##                Accuracy : 0.6             
+##                  95% CI : (0.4972, 0.6967)
+##     No Information Rate : 0.6             
+##     P-Value [Acc &gt; NIR] : 0.5433          
+##                                           
+##                   Kappa : 0               
+##                                           
+##  Mcnemar&#39;s Test P-Value : 6.984e-10       
+##                                           
+##             Sensitivity : 1.0             
+##             Specificity : 0.0             
+##          Pos Pred Value : 0.6             
+##          Neg Pred Value : NaN             
+##              Prevalence : 0.6             
+##          Detection Rate : 0.6             
+##    Detection Prevalence : 1.0             
+##       Balanced Accuracy : 0.5             
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+</div>
+<div id="evaluation-of-diagnostic-tests" class="section level3">
+<h3>15. Evaluation of Diagnostic Tests</h3>
+<p>Evaluate diagnostic test performance using diagnostic_data.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">data</span>(diagnostic_data)</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a><span class="fu">epi_analyze</span>(diagnostic_data, <span class="at">outcome =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;diagnostic&quot;</span>)</span></code></pre></div>
+<pre><code>##    test_id sensitivity specificity  accuracy
+## 1   test_1   0.8602151   0.8585859 0.8593750
+## 2   test_2   0.7619048   0.6923077 0.7257143
+## 3   test_3   0.8181818   0.7857143 0.8012422
+## 4   test_4   0.8253968   0.8846154 0.8622754
+## 5   test_5   0.8584906   0.8380952 0.8483412
+## 6   test_6   0.9108911   0.7625000 0.8453039
+## 7   test_7   0.8349515   0.8000000 0.8196721
+## 8   test_8   0.8596491   0.7641509 0.8136364
+## 9   test_9   0.9135802   0.7583333 0.8208955
+## 10 test_10   0.8823529   0.6746988 0.7797619</code></pre>
+</div>
+</div>
+<div id="visualization-examples" class="section level2">
+<h2>Visualization Examples</h2>
+<p>Visualize clinical trial outcomes by treatment arm.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="fu">data</span>(clinical_data)</span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a><span class="fu">epi_visualize</span>(clinical_data, <span class="at">x =</span> <span class="st">&quot;arm&quot;</span>, <span class="at">y =</span> <span class="st">&quot;outcome&quot;</span>, <span class="at">type =</span> <span class="st">&quot;boxplot&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Outcome by Treatment Arm&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>Visualize machine learning data (age vs. outcome).</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="fu">data</span>(ml_data)</span>
+<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a><span class="fu">epi_visualize</span>(ml_data, <span class="at">x =</span> <span class="st">&quot;age&quot;</span>, <span class="at">y =</span> <span class="st">&quot;outcome&quot;</span>, <span class="at">type =</span> <span class="st">&quot;scatter&quot;</span>, <span class="at">main =</span> <span class="st">&quot;Age vs. Disease Outcome&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>EpidigiR provides a lightweight, comprehensive toolkit for
+epidemiological analysis, with three functions and nine datasets
+covering all major topics. Use epi_analyze, epi_model, and epi_visualize
+to perform and visualize a wide range of analyses, from SIR modeling to
+advanced machine learning with Random Forest and SVM.</p>
+</div>
+<div id="license" class="section level2">
+<h2>License</h2>
+<p>EpidigiR is released under the MIT License © 2025 Esther Atsabina
+Wanjala.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

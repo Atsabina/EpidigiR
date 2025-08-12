@@ -1,0 +1,27 @@
+Package: EpidigiR
+Type: Package
+Title: Epidemiological Analysis and Visualization Tools
+Version: 0.1.2
+Authors@R: person(given = "Esther Atsabina", family = "Wanjala", email = "digitalepidemiologist23@gmail.com", role = c("aut", "cre"))
+Description: Provides tools for epidemiological analysis, modeling, and visualization. Includes functions for summary statistics, SIR modeling, DALY calculations, age standardization, diagnostic test evaluation, NLP keyword extraction, clinical trial power analysis, survival analysis, SNP association, logistic regression, k-means clustering, Random Forest, and SVM. Supplies datasets for prevalence, SIR modeling, genomic analysis, machine learning, NLP, clinical trials, DALY, age standardization, diagnostic tests, and survival analysis.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+Depends:
+    R (>= 4.0.0)
+Imports:
+    deSolve,
+    sp,
+    tm,
+    glmnet,
+    caret,
+    kernlab,
+    survival,
+    randomForest,
+    stats,
+    graphics
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

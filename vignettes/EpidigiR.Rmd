@@ -1,0 +1,244 @@
+---
+title: "Introduction to EpidigiR"
+author: "Esther Atsabina Wanjala"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to EpidigiR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## title: "Introduction to EpidigiR: Epidemiological Analysis and Visualization" output: rmarkdown::html_vignette vignette: \> %\\VignetteIndexEntry{Introduction to EpidigiR} %\\VignetteEngine{knitr::rmarkdown} %\\VignetteEncoding{UTF-8}
+
+# Introduction to EpidigiR
+
+EpidigiR is an R package for epidemiological analysis, modeling, and visualization, designed with minimal dependencies and comprehensive functionality. It provides three main functions to cover 12 epidemiological topics:
+
+-   **epi_analyze**: Performs summary statistics, SIR modeling, DALY calculations, age standardization, diagnostic test evaluation, and NLP keyword extraction.
+-   **epi_model**: Handles clinical trial power calculation, survival analysis, SNP association, logistic regression, k-means clustering, Random Forest, and SVM.
+-   **epi_visualize**: Creates visualizations for prevalence mapping, epidemic curves, scatter plots, and boxplots.
+
+The package includes nine datasets to support these analyses: epi_prevalence, sir_data, geno_data, ml_data, nlp_data, clinical_data, daly_data, survey_data, diagnostic_data, and survival_data.
+
+This vignette demonstrates how to use these functions and datasets for various epidemiological tasks.
+
+## Setup
+
+```{r setup, include=FALSE}
+    knitr::opts_chunk$set(echo = TRUE)
+
+# Install required dependencies if not already installed
+required_packages <- c("deSolve", "sp", "tm", "glmnet", "caret", "kernlab", "survival")
+for (pkg in required_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+}
+# Load required packages
+library(deSolve)
+library(sp)
+library(tm)
+library(glmnet)
+library(caret)
+library(kernlab)
+library(survival)
+library(randomForest)
+library(EpidigiR)
+# Ensure ml_data and clinical_data outcomes are factors for caret models
+data(ml_data)
+ml_data$outcome <- as.factor(ml_data$outcome)
+data(clinical_data)
+clinical_data$outcome <- as.factor(clinical_data$outcome)
+```
+
+## Datasets
+
+The package includes the following datasets:
+
+-   **epi_prevalence**: Disease prevalence by region and age group, with spatial coordinates (12 rows).
+-   **sir_data**: Simulated SIR model output (50 rows).
+-   **geno_data**: Genotype and case-control data for SNP analysis (100 rows).
+-   **ml_data**: Patient data for machine learning (logistic regression, clustering, Random Forest, SVM; 100 rows).
+-   **nlp_data**: Epidemiological text data for NLP (100 rows).
+-   **clinical_data**: Clinical trial data for power calculations and outcome analysis (200 rows).
+-   **daly_data**: Data for DALY calculations (20 rows).
+-   **survey_data**: Data for age standardization (20 rows).
+-   **diagnostic_data**: Data for diagnostic test evaluation (10 rows).
+-   **survival_data**: Data for survival analysis (100 rows).
+
+## Examples
+
+### 1. Summary Statistics
+
+Calculate incidence and prevalence using epi_prevalence.
+
+```{r}
+data(epi_prevalence)
+epi_analyze(epi_prevalence, outcome = "cases", group = "region", type = "summary")
+```
+
+### 2. SIR Epidemic Model
+
+Simulate an SIR model and visualize the epidemic curve.
+
+```{r}
+sir_result <- epi_analyze(data = NULL, outcome = NULL, type = "sir", N = 1000, beta = 0.3, gamma = 0.1, days = 50)
+    epi_visualize(sir_result, x = "time", y = "Infected", type = "curve", main = "Epidemic Curve")
+```
+
+### 3. Map Disease Prevalence
+
+Visualize prevalence by region using epi_prevalence.
+
+```{r}
+data(epi_prevalence)
+coordinates(epi_prevalence) <- ~lon+lat
+epi_visualize(epi_prevalence, x = "prevalence", type = "map", main = "Prevalence Map")
+```
+
+### 4. Clinical Trials (Power Calculation)
+
+Logistic Regression with Clinical Data.
+
+```{r}
+data(clinical_data)
+    clinical_data$outcome <- as.factor(clinical_data$outcome)
+    model <- epi_model(clinical_data, formula = outcome ~ age + health_score + dose, type = "logistic")
+    head(model$predictions)
+```
+
+## Random Forest with Clinical Data
+
+```{r}
+rf_model <- epi_model(clinical_data, formula = outcome ~ age + health_score + dose, type = "rf")
+    head(rf_model$predictions)
+
+```
+
+### 5. Clinical Trials (Outcome Analysis)
+
+Analyze treatment outcomes using logistic regression.
+
+```{r}
+data(clinical_data)
+epi_model(clinical_data, formula = outcome ~ age + health_score + dose, type = "logistic")
+```
+
+### 6. Global Health Burden (DALY)
+
+Calculate DALYs using daly_data.
+
+```{r}
+data(daly_data)
+epi_analyze(daly_data, outcome = NULL, type = "daly")
+```
+
+### 7. Genomic and Data Integration (SNP Association)
+
+Perform SNP association analysis using geno_data.
+
+```{r}
+data(geno_data)
+epi_model(geno_data, formula = outcome ~ snp1 + snp2, type = "snp")
+
+```
+
+### 8. Survey and Demographics (Age Standardization)
+
+Perform age standardization using survey_data.
+
+```{r}
+data(survey_data)
+epi_analyze(survey_data, outcome = NULL, type = "age_standardize")
+```
+
+### 9. Survey and Demographics (Logistic Regression)
+
+Predict disease risk using ml_data.
+
+```{r}
+data(ml_data)
+epi_model(ml_data, formula = outcome ~ age + exposure + genetic_risk, type = "logistic")
+```
+
+### 10. Survival Analysis
+
+Perform survival analysis using survival_data.
+
+```{r}
+data(survival_data)
+epi_model(survival_data, type = "survival")
+```
+
+### 11. NLP Tools
+
+Extract keywords from epidemiological texts using nlp_data.
+
+```{r}
+data(nlp_data)
+    nlp_result <- epi_analyze(nlp_data, outcome = NULL, type = "nlp")
+    nlp_result$keywords
+```
+
+### 12. Machine Learning and AI (K-means Clustering)
+
+Cluster patients using ml_data.
+
+```{r}
+data(ml_data)
+epi_model(ml_data[, c("age", "exposure", "genetic_risk")], type = "kmeans", k = 3)
+```
+
+### 13. Machine Learning and AI (Random Forest)
+
+Train a Random Forest model using ml_data.
+
+```{r}
+data(ml_data)
+epi_model(ml_data, formula = outcome ~ age + exposure + genetic_risk, type = "rf")
+```
+
+### 14. Machine Learning and AI (SVM)
+
+Train an SVM model using ml_data.
+
+```{r}
+data(ml_data)
+    ml_data$outcome <- as.factor(ml_data$outcome)
+    svm_model <- epi_model(ml_data, formula = outcome ~ age + exposure + genetic_risk, type = "svmRadial")
+    svm_model$performance
+```
+
+### 15. Evaluation of Diagnostic Tests
+
+Evaluate diagnostic test performance using diagnostic_data.
+
+```{r}
+data(diagnostic_data)
+epi_analyze(diagnostic_data, outcome = NULL, type = "diagnostic")
+```
+
+## Visualization Examples
+
+Visualize clinical trial outcomes by treatment arm.
+
+```{r}
+data(clinical_data)
+epi_visualize(clinical_data, x = "arm", y = "outcome", type = "boxplot", main = "Outcome by Treatment Arm")
+```
+
+Visualize machine learning data (age vs. outcome).
+
+```{r}
+data(ml_data)
+epi_visualize(ml_data, x = "age", y = "outcome", type = "scatter", main = "Age vs. Disease Outcome")
+```
+
+## Conclusion
+
+EpidigiR provides a lightweight, comprehensive toolkit for epidemiological analysis, with three functions and nine datasets covering all major topics. Use epi_analyze, epi_model, and epi_visualize to perform and visualize a wide range of analyses, from SIR modeling to advanced machine learning with Random Forest and SVM.
+
+## License
+
+EpidigiR is released under the MIT License © 2025 Esther Atsabina Wanjala.
